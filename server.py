@@ -29,7 +29,7 @@ def server():
 
                     print 'Client: (%s, %s)' % addr
 
-                    broadcast(server_socket, sockfd, "[%s:%s] entered our chatting room.\n" % addr)
+                    broadcast(sockfd, "[%s:%s] entered our chatting room.\n" % addr)
 
                 # already known connection
                 else:
@@ -50,16 +50,14 @@ def server():
     except KeyboardInterrupt:
         print "\nBye."
 
-
 def broadcast(server_socket, sock, message):
     for socket in SERVER_LIST:
         if socket != server_socket and socket != sock:
             try:
-                socket.send(message)
+                sock.send(message)
             except:
                 socket.close()
                 SERVER_LIST.remove(socket)
-
 
 if __name__ == "__main__":
     sys.exit(server())
