@@ -29,7 +29,7 @@ def server():
 
                     print 'Client: (%s, %s)' % addr
 
-                    broadcast(server_socket, sockfd, "[%s:%s] entered our chatting room.\n" % addr)
+                    broadcast(sockfd, "[%s:%s] entered our chatting room.\n" % addr)
 
                 # already known connection
                 else:
@@ -37,14 +37,14 @@ def server():
                         data = sock.recv(RECV_BUFFER)
                         # is there anything in the socket
                         if data:
-                            broadcast(server_socket, sock, "\r" + "[" + str(sock.getpeername()) + "] " + data)
+                            broadcast(sock, "\r" + "[" + str(sock.getpeername()) + "] " + data)
                         else:
                             # the socket is broken remove it
                             if sock in SERVER_LIST:
                                 SERVER_LIST.remove(sock)
-                            broadcast(server_socket, sock, "Client (%s, %s) is offline.\n" % addr)
+                            broadcast(sock, "Client (%s, %s) is offline.\n" % addr)
                     except:
-                        broadcast(server_socket, sock, "Client (%s, %s) is offline.\n" % addr)
+                        broadcast(sock, "Client (%s, %s) is offline.\n" % addr)
                         continue
 
         # always close connection after done using
@@ -53,18 +53,17 @@ def server():
         print "\nBye."
 
 
-def broadcast(server, sock, message):
+def broadcast(sock, message):
     for socket in SERVER_LIST:
-        if socket != sock and socket != sock:
+        if sock != socket:
             try:
-                socket.send(message)
+                sock.send(message)
             except:
                 # broken connection
-                socket.close()
+                sock.close()
                 # remove it
-                if socket in SERVER_LIST:
-                    SERVER_LIST.remove(socket)
-
+                if sock in SERVER_LIST:
+                    SERVER_LIST.remove(sock)
 
 if __name__ == "__main__":
     sys.exit(server())
