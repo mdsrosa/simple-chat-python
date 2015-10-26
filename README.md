@@ -1,2 +1,2 @@
 # simple-chat-python
-A simple chat implementation using sockets
+A simple chat implementation using sockets.
