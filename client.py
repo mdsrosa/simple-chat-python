@@ -24,28 +24,32 @@ def client():
     print 'Connected to remote host. You can start sending message.'
     sys.stdout.write('[Me] '); sys.stdout.flush()
 
-    while True:
-        socket_list = [sys.stdin, s]
+    try:
+        while True:
+            socket_list = [sys.stdin, s]
 
-        # get the list of readable sockets
-        ready_to_read, ready_to_write, in_error = select.select(socket_list, [], [], 0)
+            # get the list of readable sockets
+            ready_to_read, ready_to_write, in_error = select.select(socket_list, [], [], 0)
 
-        for sock in ready_to_read:
-            if sock == s:
-                # message from the server
-                data = sock.recv(RECV_BUFFER)
+            for sock in ready_to_read:
+                if sock == s:
+                    # message from the server
+                    data = sock.recv(RECV_BUFFER)
 
-                if not data:
-                    print 'Disconnected from ther server.'
-                    sys.exit()
+                    if not data:
+                        print 'Disconnected from ther server.'
+                        sys.exit()
+                    else:
+                        sys.stdout.write(data)
+                        sys.stdout.write('[Me] '); sys.stdout.flush()
                 else:
-                    sys.stdout.write(data)
+                    # user has entered a message
+                    message = sys.stdin.readline()
+                    s.send(message)
                     sys.stdout.write('[Me] '); sys.stdout.flush()
-            else:
-                # user has entered a message
-                message = sys.stdin.readline()
-                s.send(message)
-                sys.stdout.write('[Me] '); sys.stdout.flush()
+    except KeyboardInterrupt:
+        print 'Bye.'
+        sys.exit()
 
 
 if __name__ == '__main__':

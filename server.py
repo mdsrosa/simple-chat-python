@@ -38,32 +38,27 @@ def server():
                         # is there anything in the socket
                         if data:
                             broadcast(server_socket, sock, "\r" + "[" + str(sock.getpeername()) + "] " + data)
-                        else:
-                            # the socket is broken remove it
-                            if sock in SERVER_LIST:
-                                SERVER_LIST.remove(sock)
-                            broadcast(server_socket, sock, "Client (%s, %s) is offline.\n" % addr)
                     except:
                         broadcast(server_socket, sock, "Client (%s, %s) is offline.\n" % addr)
+                        print "Client (%s, %s) is offline." % addr
+                        sock.close()
+                        SERVER_LIST.remove(sock)
                         continue
 
         # always close connection after done using
-        server.close()
+        server_socket.close()
     except KeyboardInterrupt:
         print "\nBye."
 
 
-def broadcast(server, sock, message):
+def broadcast(server_socket, sock, message):
     for socket in SERVER_LIST:
-        if socket != sock and socket != sock:
+        if socket != server_socket and socket != sock:
             try:
                 socket.send(message)
             except:
-                # broken connection
                 socket.close()
-                # remove it
-                if socket in SERVER_LIST:
-                    SERVER_LIST.remove(socket)
+                SERVER_LIST.remove(socket)
 
 
 if __name__ == "__main__":
